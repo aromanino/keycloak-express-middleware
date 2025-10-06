@@ -273,7 +273,7 @@ keycloackAdapter.configure is a configuration function for the Keycloak
 adapter in an Express application. It must be called at app startup, before defining any protected routes.
 It is an async function and returns a promise
 
-Parameters:
+**` -- @parameters -- `**
 - **app**: `[required]` Express application instance (e.g., const app = express();)
 - **keyCloakConfig:** `[required]`JSON object containing the Keycloak client configuration.  This can be obtained from the Keycloak admin console: Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
   Example:   
@@ -313,9 +313,10 @@ Alternatively, if you prefer to define your resources inside a container after c
 ```
 This Method is deprecated and will be removed in future versions. It must be called **after** Keycloak has been configured with `configure()`.
 The routes declared inside the provided callback will be protected and will have access to authentication/authorization features managed by Keycloak.
+
 📌 Public (unprotected) routes should be declared **before** calling this method. 
 
-**`@parameters`** 
+**` -- @parameters -- `** 
 - **{Function} callback:** `[required]` A function that defines all routes to be protected. It must contain exclusively routes requiring authentication.
 
 ✅ Usage example:
@@ -347,22 +348,21 @@ keycloakAdapter.underKeycloakProtection(() => {
 Middleware to protect Express routes based on authentication and, optionally, authorization via Keycloak roles. 
 Allows restricting access to a resource only to authenticated users or to those possessing specific roles in the realm or in a Keycloak client.
 
-@parameters {string|function} [conditions]
-- If a string, specifies one or more required roles, using the syntax:
-    - 'role'              → client role in the configured client (e.g., 'admin')
-    - 'clientid:role'     → client role of a specific client (e.g., 'myclient:editor')
-    - 'realm:role'        → realm role (e.g., 'realm:superuser')
-  - If a function, receives (token, req) and must return true or false synchronously.
-    This function enables custom authorization logic.
+**` -- @parameters -- `**
+- **conditions**: `[optional]` An array of strings each specifying one or more required roles; or a function executing custom code performing an access role verification 
+  - As array of Strings: specifies one or more required roles, using the syntax:
+         - 'role'              → client role in the configured client (e.g., 'admin')
+         - 'clientid:role'     → client role of a specific client (e.g., 'myclient:editor')
+         - 'realm:role'        → realm role (e.g., 'realm:superuser')
+  - As a function: receives (token, req) and must return true or false synchronously. This function enables custom authorization logic.
     - The `token` object passed to the authorization function exposes methods such as:
       - token.hasRole('admin')               // client role in configured client
       - token.hasRole('realm:superuser')     // realm role
       - token.hasRole('my-client:editor')    // client role of a specific client
       - token.hasResourceRole('editor', 'my-client-id') // equivalent to hasRole('my-client:editor')
+      The authorization function must be synchronous and return true (allow access) or false (deny access).
 
-    The authorization function must be synchronous and return true (allow access) or false (deny access).
-
-@returns {Function} Express middleware to protect the route.
+**` -- @returns -- `**  It return a function as an Express middleware to protect the route.
 
 ✅ Usage example:
 ```js
@@ -395,13 +395,9 @@ app.get('/custom', keycloakAdapter.protectMiddleware((token, req) => {
 }), (req, res) => {
     res.send('Access granted by custom authorization function.');
 });
-
 ```
-
-
 ### `customProtectMiddleware(fn)`
 Middleware similar to `protectMiddleware` but with dynamic role checking via a function.
-
 Unlike `protectMiddleware`, which accepts a string expressing the role or a control function
 that works on the token, this middleware accepts a function that receives the Express
 request and response objects `req` and `res` and must return a string representing the role control string.
@@ -409,15 +405,12 @@ request and response objects `req` and `res` and must return a string representi
 This is useful for parametric resources where the role control string must be dynamically generated based on the request,
 for example, based on URL parameters or query strings.
 
-Note: this function **does not** access or parse the token, nor performs any checks other than the role,
-so it cannot be used for complex logic depending on request properties other than the role
-(e.g., client IP, custom headers, etc.).
+**Note:** this function **does not** access or parse the token, nor performs any checks other than the role,
+so it cannot be used for complex logic depending on request properties other than the role (e.g., client IP, custom headers, etc.).
 The function's sole task is to generate the role control string.
 
---- Parameters ---
-
-@param {function} customFunction - function that receives (req, res) and returns a string
-with the role control string to pass to Keycloak.
+**` -- @parameters -- `**
+- **fn:** `[required]` customFunction function that receives (req, res) and returns a string with the role control string to pass to Keycloak.
 
 ✅ Usage example:
 ```js
@@ -429,11 +422,9 @@ app.get('/custom/:id', keycloakAdapter.customProtectMiddleware((req) => {
     res.send(`Access granted to users with role 'clientRole${req.params.id}'`);
 });
 ```
-
-
 ### `enforcerMiddleware(conditions, options)`
-`enforcerMiddleware` is a middleware to enable permission checks
-based on resources and policies defined in Keycloak Authorization Services (UMA 2.0-based).
+`enforcerMiddleware` is a middleware to enable permission checks based on resources and policies
+defined in Keycloak Authorization Services (UMA 2.0-based).
 
 Unlike `protectMiddleware` and similar, which only verify authentication or roles,
 `enforcerMiddleware` allows checking if the user has permission to access
@@ -442,20 +433,18 @@ a specific protected resource through flexible and dynamic policies.
 Useful in contexts where resources are registered in Keycloak (such as documents, instances, dynamic entities) and
 protected by flexible policies.
 
---- Parameters ---
-
-@param {string|function} conditions
-- string containing the name of the resource or permission to check
-- custom check function with signature:
-  function(token, req, callback)
-    - token: decoded Keycloak token
-    - req: Express request
-    - callback(boolean): invoke with true if authorized, false otherwise
-
-@param {object} [options] (optional)
-- response_mode: 'permissions' (default) or 'token'
-- claims: object with claim info for dynamic policies (e.g. owner id matching)
-- resource_server_id: resource client id (default: current client)
+**` -- @parameters -- `**
+- **conditions:** a check control string or function
+  - ***As a string:*** contain the name of the resource or permission to check
+  - ***as a fuction:*** custom check function with signature:
+    function(token, req, callback)
+      - token: decoded Keycloak token
+      - req: Express request
+      - callback(boolean): invoke with true if authorized, false otherwise 
+- **options:**: parameter provided as a JSON object that accepts the following filter:
+  - response_mode: 'permissions' (default) or 'token'
+  - claims: object with claim info for dynamic policies (e.g. owner id matching)
+  - resource_server_id: resource client id (default: current client)
 
 --- How it works ---
 - If conditions is a function, it is used for custom checks with callback.
@@ -505,7 +494,6 @@ app.get('/onlyAdminrouteByfunction', keycloakAdapter.enforcerMiddleware(function
     res.send('You are an authorized admin or viewer (custom check)');
 });
 ```
-
 ### `customEnforcerMiddleware(fn, options)`
 `customEnforcerMiddleware` is a middleware for permission checks based on resources and policies
 defined in Keycloak Authorization Services (UMA 2.0), using dynamic permission strings.
