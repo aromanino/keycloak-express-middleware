@@ -315,7 +315,7 @@ This Method is deprecated and will be removed in future versions. It must be cal
 The routes declared inside the provided callback will be protected and will have access to authentication/authorization features managed by Keycloak.
 📌 Public (unprotected) routes should be declared **before** calling this method. 
 
-`**@parameters**` 
+**`@parameters`** 
 - **{Function} callback:** `[required]` A function that defines all routes to be protected. It must contain exclusively routes requiring authentication.
 
 ✅ Usage example:
