@@ -1,9 +1,8 @@
 # 🔐 Keycloak Adapter API for Node.js (Express)
 
 An adapter API to seamlessly integrate **Node.js Express** applications with **Keycloak** for authentication and authorization using **OpenID Connect (OIDC)**.
-
-This middleware provides route protection, token validation, user role management, and easy access to Keycloak-secured APIs. Ideal for securing RESTful services, microservices, and Express-based backends.
-it is based on 'keycloak-connect', 'express-session' and '@keycloak/keycloak-admin-client'
+This middleware provides route protection, token validation, user role management. Ideal for securing RESTful services, microservices, Express-based backends, and express or javascript frontends.
+it is based on 'keycloak-connect', 'express-session'
 ---
 
 ## 📦 Features
@@ -56,7 +55,7 @@ the Keycloak Admin Console → clients (left sidebar) → choose your client →
 
 ```js
 const express = require('express');
-const keycloackAdapter = require('keycloak-adapter-api');
+const keycloackAdapter = require('keycloak-express-middleware');
 
 const app = express();
 
@@ -263,7 +262,7 @@ app.listen(PORT, () => {
 In your Express application:
 
 ```js
-import keycloakAdapter from 'keycloak-adapter-api';
+import keycloakAdapter from 'keycloak-express-middleware';
 
 // Configure and Initialize Keycloak adapter
 keycloackAdapter.configure(app,{
