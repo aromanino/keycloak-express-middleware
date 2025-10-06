@@ -351,7 +351,7 @@ Allows restricting access to a resource only to authenticated users or to those 
 
 **` -- @parameters -- `**
 - **conditions**: `[optional]` An array of strings each specifying one or more required roles; or a function executing custom code performing an access role verification 
-  - As array of Strings: specifies one or more required roles, using the syntax: 
+  - As array of strings: specifies one or more required roles, using the syntax: 
     - 'role'              → client role in the configured client (e.g., 'admin')
     - 'clientid:role'     → client role of a specific client (e.g., 'myclient:editor')
     - 'realm:role'        → realm role (e.g., 'realm:superuser')
@@ -411,7 +411,7 @@ so it cannot be used for complex logic depending on request properties other tha
 The function's sole task is to generate the role control string.
 
 **` -- @parameters -- `**
-- **fn:** `[required]` customFunction function that receives (req, res) and returns a string with the role control string to pass to Keycloak.
+- **fn:** `[required]` Custom function that receives (req, res) and returns a string with the role control string to pass to Keycloak.
 
 ✅ Usage example:
 ```js
@@ -438,8 +438,8 @@ protected by flexible policies.
 **` -- @parameters -- `**
 - **conditions:** a check control string or function
   - ***As a string:*** contain the name of the resource or permission to check
-  - ***as a fuction:*** custom check function with signature:
-    function(token, req, callback)
+  - ***as a function:*** custom check function with signature:
+    ***`function(token, req, callback)`***
       - token: decoded Keycloak token
       - req: Express request
       - callback(boolean): invoke with true if authorized, false otherwise 
@@ -496,6 +496,7 @@ app.get('/onlyAdminrouteByfunction', keycloakAdapter.enforcerMiddleware(function
     res.send('You are an authorized admin or viewer (custom check)');
 });
 ```
+---
 ### `customEnforcerMiddleware(fn, options)`
 `customEnforcerMiddleware` is a middleware for permission checks based on resources and policies
 defined in Keycloak Authorization Services (UMA 2.0), using dynamic permission strings.
@@ -504,10 +505,9 @@ This middleware is similar to `enforcerMiddleware`, but takes a function
 `customFunction(req, res)` as a parameter, which must dynamically return
 the permission/resource string to be checked.
 
---- Parameters ---
+**` -- @parameters -- `**
+- **fn:**`[required]` custom function that receives `req` and `res` and returns the control string for Keycloak.
 
-@param {function} customFunction
-Function that receives `req` and `res` and returns the control string for Keycloak.
 Example:
 ```js
 function customFunction(req, res) {
@@ -516,11 +516,10 @@ function customFunction(req, res) {
 }
 ```
 
-@param {object} [options] (optional)
-Additional options passed to `keycloak.enforcer()`, including:
-    - response_mode: 'permissions' (default) or 'token'
-    - claims: object with claim info for dynamic policies (e.g., owner ID)
-    - resource_server_id: string representing the resource client ID (default: current client)
+- **options:** `[optional]` Additional options passed to `keycloak.enforcer()`, including:
+  - **response_mode:** 'permissions' (default) or 'token'
+  - **claims:** object with claim info for dynamic policies (e.g., owner ID)
+  - **resource_server_id:** string representing the resource client ID (default: current client)
 
 --- response_mode options ---
 1) 'permissions' (default)
@@ -552,11 +551,12 @@ const tmpFunctionEnforce = function(req, res) {
 };
 
 app.get('/onlyAdminrouteByfunction/:permission', keycloakAdapter.customEnforcerMiddleware(tmpFunctionEnforce), (req, res) => {
+    console.log("token permissions:", req.permissions);    
     res.send('You are an authorized user with dynamic permission: ' + req.params.permission);
 });
 
 ```
-
+---
 ### `encodeTokenRole()`
 `encodeTokenRole` is a middleware that decodes the Keycloak token and adds it
 to the Express request as `req.encodedTokenRole`.
@@ -589,7 +589,7 @@ app.get('/encodeToken', keycloakAdapter.encodeTokenRole(), (req, res) => {
 });
 
 ```
-
+---
 ### `encodeTokenPermission()`
 `encodeTokenPermission` ia s Middleware whose sole purpose is to decode the access token present in the request
 and add to the `req` object a property called `encodedTokenPermission` containing the token's permissions.
@@ -605,12 +605,8 @@ It is particularly useful when:
 
 --- Additions to `req` ---
 
-After applying the middleware, `req` contains:
-- @property {Object} req.encodedTokenPermission
-An object exposing the method:
-    - hasPermission(permission: string, callback: function(boolean))
-      Checks whether the token contains the specified permission.
-      The callback receives `true` if the permission is present, `false` otherwise.
+After applying the middleware, `req` contains the property **`encodedTokenPermission`** as an object exposing the method:
+- hasPermission(permission: string, callback: function(boolean)) :Checks whether the token contains the specified permission. The callback receives `true` if the permission is present, `false` otherwise.
 
 ✅ Usage example:
 ```js
@@ -627,7 +623,7 @@ app.get('/encodeTokenPermission',
     });
 
 ```
-
+---
 ### `loginMiddleware(redirectTo)`
 `loginMiddleware` is a Middleware used to **force user authentication** via Keycloak.
 
@@ -642,9 +638,8 @@ It is particularly useful when you want to:
 2. If authentication fails or is denied, the user is redirected according to Keycloak's configured settings.
 3. If authentication is successful, the user is redirected to 'redirectTo' (usually `/home`, `/dashboard`, etc.).
 
---- Parameters ---
-
-@param {string} redirectTo - URL to redirect the user to after login.
+**` -- @parameters -- `**
+- **redirectTo**: `[required]` URL to redirect the user to after login.
 
 --- Warning ---
 
@@ -660,8 +655,7 @@ app.get('/loginMiddleware', keycloakAdapter.loginMiddleware("/home"), (req, res)
 });
 
 ```
-
-
+---
 ### `logoutMiddleware(redirectTo)`
 `logoutMiddleware` Middleware is used to **force user logout**, removing the local session
 and redirecting the user to Keycloak's logout endpoint according to its configuration.
@@ -677,9 +671,8 @@ It is useful when:
 3. **Destroys the local Express session** (e.g., cookies, user data).
 4. Redirects the user to the Keycloak logout URL, which in turn redirects to the provided URL.
 
---- Parameters ---
-
-@param {string} redirectTo - URL to which the user will be redirected after complete logout.
+**` -- @parameters -- `**
+- **redirectTo**: `[required]` URL to which the user will be redirected after complete logout.
 
 ✅ Usage example:
 ```js
@@ -690,7 +683,6 @@ app.get('/logoutMiddleware', keycloakAdapter.logoutMiddleware("http://localhost:
     });
 
 ```
-
 --- Note ---
 - The middleware **never executes the route callback**, as it fully handles the response.
 - The `redirectTo` parameter must match a **valid redirect URI** configured in Keycloak for the client.
@@ -701,7 +693,6 @@ app.get('/logoutMiddleware', keycloakAdapter.logoutMiddleware("http://localhost:
 
 
 ## 🔧 Available Functions
-
 ### `login(req, res, redirectTo)`
 `login` Function not a middleware, but a **classic synchronous function** that forces user authentication
 via Keycloak and, if the user is not authenticated, redirects them to the login page.
@@ -712,11 +703,10 @@ After successful login, the user is redirected to the URL specified in the `redi
 - `login` instead is a function **that can be manually called inside the route handler**,
   offering **greater control** over when and how login is enforced.
 
---- Parameters ---
-
-- @param {Object} req - Express `Request` object
-- @param {Object} res - Express `Response` object
-- @param {string} redirectTo - URL to redirect the user to after successful login
+**` -- @parameters -- `**
+- **req:** `[required]` Express `Request` object
+- **res:** `[required]` Express `Response` object
+- **redirectTo:** `[required]` URL to redirect the user to after successful login
 
 --- Behavior ---
 1. Attempts to protect the request using `keycloak.protect()`.
@@ -741,7 +731,7 @@ app.get('/login', (req, res) => {
 
 --- Requirements ---
 - `Valid Redirect URIs` must include the URL passed to `redirectTo`.
-
+---
 ### `logout(req, res, redirectTo)`
 `logout` Function is not a middleware, but a **classic synchronous function** that forces the user to logout
 via Keycloak. In addition to terminating the current session (if any), it generates the Keycloak
@@ -752,10 +742,11 @@ logout URL and redirects the user's browser to that address.
 - `logout` instead is a function **to be called inside the route**, useful for handling logout
   **conditionally** or within more complex logic.
 
---- Parameters ---
-- @param {Object} req - Express `Request` object
-- @param {Object} res - Express `Response` object
-- @param {string} redirectTo - URL to redirect the user after logout
+**` -- @parameters -- `**
+- **req:** `[required]` Express `Request` object
+- **res:** `[required]` Express `Response` object
+- **redirectTo:** `[required]` URL to redirect the user to after successful logout
+
 
 --- Behavior ---
 1. Retrieves the `id_token` from the current user's Keycloak token (if present).
