@@ -344,23 +344,23 @@ keycloakAdapter.underKeycloakProtection(() => {
     });
 });
 ```
+---
 ### `protectMiddleware([conditions])`
 Middleware to protect Express routes based on authentication and, optionally, authorization via Keycloak roles. 
 Allows restricting access to a resource only to authenticated users or to those possessing specific roles in the realm or in a Keycloak client.
 
 **` -- @parameters -- `**
 - **conditions**: `[optional]` An array of strings each specifying one or more required roles; or a function executing custom code performing an access role verification 
-  - As array of Strings: specifies one or more required roles, using the syntax:
-         - 'role'              → client role in the configured client (e.g., 'admin')
-         - 'clientid:role'     → client role of a specific client (e.g., 'myclient:editor')
-         - 'realm:role'        → realm role (e.g., 'realm:superuser')
-  - As a function: receives (token, req) and must return true or false synchronously. This function enables custom authorization logic.
-    - The `token` object passed to the authorization function exposes methods such as:
-      - token.hasRole('admin')               // client role in configured client
-      - token.hasRole('realm:superuser')     // realm role
-      - token.hasRole('my-client:editor')    // client role of a specific client
-      - token.hasResourceRole('editor', 'my-client-id') // equivalent to hasRole('my-client:editor')
-      The authorization function must be synchronous and return true (allow access) or false (deny access).
+  - As array of Strings: specifies one or more required roles, using the syntax: 
+    - 'role'              → client role in the configured client (e.g., 'admin')
+    - 'clientid:role'     → client role of a specific client (e.g., 'myclient:editor')
+    - 'realm:role'        → realm role (e.g., 'realm:superuser')
+  - As a function: receives (token, req) and must return true or false synchronously. This function enables custom authorization logic. The `token` object passed to the authorization function exposes methods such as:
+    - token.hasRole('admin')               // client role in configured client
+    - token.hasRole('realm:superuser')     // realm role
+    - token.hasRole('my-client:editor')    // client role of a specific client
+    - token.hasResourceRole('editor', 'my-client-id') // equivalent to hasRole('my-client:editor')
+    The authorization function must be synchronous and return true (allow access) or false (deny access).
 
 **` -- @returns -- `**  It return a function as an Express middleware to protect the route.
 
@@ -396,6 +396,7 @@ app.get('/custom', keycloakAdapter.protectMiddleware((token, req) => {
     res.send('Access granted by custom authorization function.');
 });
 ```
+---
 ### `customProtectMiddleware(fn)`
 Middleware similar to `protectMiddleware` but with dynamic role checking via a function.
 Unlike `protectMiddleware`, which accepts a string expressing the role or a control function
@@ -422,6 +423,7 @@ app.get('/custom/:id', keycloakAdapter.customProtectMiddleware((req) => {
     res.send(`Access granted to users with role 'clientRole${req.params.id}'`);
 });
 ```
+---
 ### `enforcerMiddleware(conditions, options)`
 `enforcerMiddleware` is a middleware to enable permission checks based on resources and policies
 defined in Keycloak Authorization Services (UMA 2.0-based).
