@@ -507,14 +507,13 @@ the permission/resource string to be checked.
 
 **` -- @parameters -- `**
 - **fn:**`[required]` custom function that receives `req` and `res` and returns the control string for Keycloak.
-
-Example:
-```js
-function customFunction(req, res) {
-    // Your function logic
-    return req.params.permission;
-}
-```
+    As example:
+    ```js
+    function customFunction(req, res) {
+        // Your function logic
+        return req.params.permission;
+    }
+    ```
 
 - **options:** `[optional]` Additional options passed to `keycloak.enforcer()`, including:
   - **response_mode:** 'permissions' (default) or 'token'
