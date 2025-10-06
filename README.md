@@ -274,8 +274,8 @@ adapter in an Express application. It must be called at app startup, before defi
 It is an async function and returns a promise
 
 Parameters:
-- **app**: ***[required]*** Express application instance (e.g., const app = express();)
-- keyCloakConfig: JSON object containing the Keycloak client configuration.  This can be obtained from the Keycloak admin console: Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
+- **app**: `[required]` Express application instance (e.g., const app = express();)
+- **keyCloakConfig:** `[required]`JSON object containing the Keycloak client configuration.  This can be obtained from the Keycloak admin console: Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
   Example:   
   ```js       
     {
@@ -287,7 +287,7 @@ Parameters:
         "confidential-port": 0
     }
   ```
-- **keyCloakOptions**: ***[required]*** advanced configuration options for the adapter. Main supported options:
+- **keyCloakOptions**: `[required]` advanced configuration options for the adapter. Main supported options:
   - **session:** Express session configuration (as in express-session)
   - **scope:** authentication scopes (e.g., 'openid profile email offline_access') **Note:** to use offline_access, the client must have the option enabled and the user must have the offline_access role.
   - **idpHint:** to suggest an identity provider to Keycloak during login
@@ -296,7 +296,7 @@ Parameters:
 ---
 ## 🔧 Available Middlewares
 ### `underKeycloakProtection(callback) - deprecated - ` 
-**@deprecated Method**. Use the `configure` Method with `await keycloakAdapter.configure(...)`, then define your resources as you normally would in Express:
+**@deprecated Method**. Use the `configure` Method with await keycloakAdapter.configure(...)`, then define your resources as you normally would in Express:
 ```js
     await keycloakAdapter.configure(config_Parameters);
     
@@ -315,8 +315,9 @@ This Method is deprecated and will be removed in future versions. It must be cal
 The routes declared inside the provided callback will be protected and will have access to authentication/authorization features managed by Keycloak.
 📌 Public (unprotected) routes should be declared **before** calling this method. 
 
-@parameters 
-- {Function} callback - A function that defines all routes to be protected. It must contain exclusively routes requiring authentication.
+`**@parameters**` 
+- **{Function} callback:** `[required]` A function that defines all routes to be protected. It must contain exclusively routes requiring authentication.
+
 ✅ Usage example:
 ```js
 // Public route not protected by Keycloak
@@ -342,15 +343,11 @@ keycloakAdapter.underKeycloakProtection(() => {
     });
 });
 ```
-
 ### `protectMiddleware([conditions])`
-Middleware to protect Express routes based on authentication and, optionally,
-authorization via Keycloak roles.
+Middleware to protect Express routes based on authentication and, optionally, authorization via Keycloak roles. 
+Allows restricting access to a resource only to authenticated users or to those possessing specific roles in the realm or in a Keycloak client.
 
-Allows restricting access to a resource only to authenticated users or
-to those possessing specific roles in the realm or in a Keycloak client.
-
-@param {string|function} [conditions]
+@parameters {string|function} [conditions]
 - If a string, specifies one or more required roles, using the syntax:
     - 'role'              → client role in the configured client (e.g., 'admin')
     - 'clientid:role'     → client role of a specific client (e.g., 'myclient:editor')
