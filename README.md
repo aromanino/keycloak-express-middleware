@@ -1,12 +1,9 @@
 # 🔐 Keycloak Adapter API for Node.js (Express)
-
 An adapter API to seamlessly integrate **Node.js Express** applications with **Keycloak** for authentication and authorization using **OpenID Connect (OIDC)**.
 This middleware provides route protection, token validation, user role management. Ideal for securing RESTful services, microservices, Express-based backends, and express or javascript frontends.
 it is based on 'keycloak-connect', 'express-session'
 ---
-
 ## 📦 Features
-
 - 🔑 OIDC-based authentication with Keycloak
 - 🧾 Access token validation (JWT)
 - 🔐 Route protection via role-based access control
@@ -14,28 +11,19 @@ it is based on 'keycloak-connect', 'express-session'
 - ⚙️ Configurable Keycloak client and realm settings
 - 👤 User info extraction from token
 - 🌍 CORS support and integration with frontend apps (SPA or mobile)
-
 ---
-
 ## 🚀 Installation
-
 ```bash
 npm install keycloak-express-middleware
 ```
-
 Or, if using Yarn:
-
 ```bash
 yarn add keycloak-express-middleware
 ```
-
 ---
-
 ## 🛠️ Get Keycloak Configuration
-
 Copy or Download from keycloak admin page your client configuration `keycloak.json` by visiting 
 the Keycloak Admin Console → clients (left sidebar) → choose your client → Installation → Format Option → Keycloak OIDC JSON → Download
-
 ```json
 {
   "realm": "your-realm",
@@ -48,11 +36,8 @@ the Keycloak Admin Console → clients (left sidebar) → choose your client →
   "confidential-port": 0
 }
 ```
-
 ---
-
 ## 📄 Usage Example
-
 ```js
 const express = require('express');
 const keycloackAdapter = require('keycloak-express-middleware');
@@ -78,12 +63,13 @@ await keycloackAdapter.configure(app,{
     });
 
 
-// Public route
+// -------------- Public route  -----------------------
 app.get('/', (req, res) => {
   res.send('Public route: no authentication required');
 });
 
-/* Protected routes (any authenticated user)   */
+
+/* ############## Protected routes (any authenticated user) ###########  */
 
 // Example of login with keycloackAdapter.login function
 // After login redirect to "/home" 
@@ -254,13 +240,9 @@ app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 ```
-
 ---
-
 ## 🧩 Configuration
-
 In your Express application:
-
 ```js
 import keycloakAdapter from 'keycloak-express-middleware';
 
@@ -281,15 +263,13 @@ keycloackAdapter.configure(app,{
         }
     })
 ```
-
 keycloackAdapter.configure is a configuration function for the Keycloak 
-adapter in an Express application.  
-It must be called at app startup, before defining any protected routes.
+adapter in an Express application. It must be called at app startup, before defining any protected routes.
 It is an async function and returns a promise
 
 Parameters:
 - app: Express application instance (e.g., const app = express();)
--   keyCloakConfig: JSON object containing the Keycloak client configuration.
+- keyCloakConfig: JSON object containing the Keycloak client configuration.
      This can be obtained from the Keycloak admin console:
      Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
       Example:
@@ -301,8 +281,7 @@ Parameters:
     "credentials": { "secret": "secret-code" },
     "confidential-port": 0
     }
-- keyCloakOptions: advanced configuration options for the adapter.
-  Main supported options:
+- keyCloakOptions: advanced configuration options for the adapter. Main supported options:
     - session: Express session configuration (as in express-session)
     - scope: authentication scopes (e.g., 'openid profile email offline_access')
       Note: to use offline_access, the client must have the option enabled and
@@ -334,12 +313,9 @@ Parameters:
     - offlineToken: [Optional] boolean value. If true, requests an offline token (used for long-lived refresh tokens). Default is false.
     - refreshToken: [Optional] string containing a valid refresh token to request a new access token when using the refresh_token grant type.
 ---
-
 ## 🔧 Available Middlewares
-
 ### `underKeycloakProtection(callback) - deprecated - ` 
-@deprecated. Use the `configure` Method with `await keycloakAdapter.configure(...)`,
-then define your resources as you normally would in Express:
+@deprecated Method. Use the `configure` Method with `await keycloakAdapter.configure(...)`, then define your resources as you normally would in Express:
 ```js
     await keycloakAdapter.configure(config_Parameters);
     
@@ -347,29 +323,22 @@ then define your resources as you normally would in Express:
 
     app.get('/my-route', handler);
 ```
-
-Alternatively, if you prefer to define your resources inside a container after configuration,
-you can use the `then` syntax:
+Alternatively, if you prefer to define your resources inside a container after configuration, you can use the `then` syntax:
 ```js
     keycloakAdapter.configure(configParameters).then(() => {
-        // Define all your routes here
+        // Define all your routes to ptotect here
         app.get('/my-route', handler);
     });
 ```
-
-This Method is deprecated and will be removed in future versions.
-
-Method to define Express routes that must be protected by Keycloak.
-
+This Method is deprecated and will be removed in future versions. 
 This method must be called **after** Keycloak has been configured with `configure()`.
 The routes declared inside the provided callback will be protected and will have access
 to authentication/authorization features managed by Keycloak.
-
 📌 Public (unprotected) routes should be declared **before** calling this method.
 
-@param {Function} callback - A function that defines all routes to be protected.
+@params 
+{Function} callback - A function that defines all routes to be protected.
 It must contain exclusively routes requiring authentication.
-
 ✅ Usage example:
 ```js
 // Public route not protected by Keycloak
