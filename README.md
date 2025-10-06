@@ -274,7 +274,7 @@ adapter in an Express application. It must be called at app startup, before defi
 It is an async function and returns a promise
 
 Parameters:
-- app: Express application instance (e.g., const app = express();)
+- **app**: ***[required]*** Express application instance (e.g., const app = express();)
 - keyCloakConfig: JSON object containing the Keycloak client configuration.  This can be obtained from the Keycloak admin console: Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
   Example:   
   ```js       
@@ -287,64 +287,36 @@ Parameters:
         "confidential-port": 0
     }
   ```
-- keyCloakOptions: : [required] advanced configuration options for the adapter. Main supported options:
-  - session: Express session configuration (as in express-session)
-  - scope: authentication scopes (e.g., 'openid profile email offline_access')
-    Note: to use offline_access, the client must have the option enabled and
-    the user must have the offline_access role.
-  - idpHint: to suggest an identity provider to Keycloak during login
-  - cookies: to enable cookie handling
-  - realmUrl: to override the realm URL
-- adminClientCredentials: [Optional] Advanced configuration for setting up the realm-admin user or client,
-  which will be used as the administrator to manage Keycloak via API.
-  This is required in order to use the administrative functions exposed by this library.
-  If this parameter is not provided, it will not be possible to use the administrative functions of Keycloak
-  exposed by this adapter. In fact, exports.kcAdminClient will be null, so any attempt to call
-  keycloakAdapter.kcAdminClient will result in a runtime error due to access on an undefined object
-  Main supported options:
-    - realmName: [Optional] A String that specifies the realm to authenticate against, if different from the "keyCloakConfig.realm" parameter.
-      If you intend to use Keycloak administrator credentials, this should be set to 'master'.
-    - scope: [Optional] A string that specifies The OAuth2 scope requested during authentication (optional).
-      Typically, not required for administrative clients. example:openid profile
-    - requestOptions: [Optional] JSON parameters to configure HTTP requests (such as custom headers, timeouts, etc.).
-      It is compatible with the Fetch API standard. Fetch request options
-      https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
-    - username: [Optional] string username. Required when using the password grant type.
-    - password: [Optional] string password. Required when using the password grant type.
-    - grantType: The OAuth2 grant type used for authentication.
-      Possible values: 'password', 'client_credentials', 'refresh_token', etc.
-    - clientId: string containing the client ID configured in Keycloak. Required for all grant types.
-    - clientSecret: [Optional] string containing the client secret of the client. Required for client_credentials or confidential clients.
-    - totp: string for Time-based One-Time Password (TOTP) for multifactor authentication (MFA), if enabled for the user.
-    - offlineToken: [Optional] boolean value. If true, requests an offline token (used for long-lived refresh tokens). Default is false.
-    - refreshToken: [Optional] string containing a valid refresh token to request a new access token when using the refresh_token grant type.
+- **keyCloakOptions**: ***[required]*** advanced configuration options for the adapter. Main supported options:
+  - **session:** Express session configuration (as in express-session)
+  - **scope:** authentication scopes (e.g., 'openid profile email offline_access') **Note:** to use offline_access, the client must have the option enabled and the user must have the offline_access role.
+  - **idpHint:** to suggest an identity provider to Keycloak during login
+  - **cookies:** to enable cookie handling
+  - **realmUrl:** to override the realm URL
 ---
 ## 🔧 Available Middlewares
 ### `underKeycloakProtection(callback) - deprecated - ` 
-@deprecated Method. Use the `configure` Method with `await keycloakAdapter.configure(...)`, then define your resources as you normally would in Express:
+**@deprecated Method**. Use the `configure` Method with `await keycloakAdapter.configure(...)`, then define your resources as you normally would in Express:
 ```js
     await keycloakAdapter.configure(config_Parameters);
     
-    // all your routes
+    // Define all your routes here
 
     app.get('/my-route', handler);
 ```
 Alternatively, if you prefer to define your resources inside a container after configuration, you can use the `then` syntax:
 ```js
     keycloakAdapter.configure(configParameters).then(() => {
-        // Define all your routes to ptotect here
+        // Define all your routes to protect here
         app.get('/my-route', handler);
     });
 ```
-This Method is deprecated and will be removed in future versions. 
-This method must be called **after** Keycloak has been configured with `configure()`.
-The routes declared inside the provided callback will be protected and will have access
-to authentication/authorization features managed by Keycloak.
-📌 Public (unprotected) routes should be declared **before** calling this method.
+This Method is deprecated and will be removed in future versions. It must be called **after** Keycloak has been configured with `configure()`.
+The routes declared inside the provided callback will be protected and will have access to authentication/authorization features managed by Keycloak.
+📌 Public (unprotected) routes should be declared **before** calling this method. 
 
-@params 
-{Function} callback - A function that defines all routes to be protected.
-It must contain exclusively routes requiring authentication.
+@parameters 
+- {Function} callback - A function that defines all routes to be protected. It must contain exclusively routes requiring authentication.
 ✅ Usage example:
 ```js
 // Public route not protected by Keycloak
