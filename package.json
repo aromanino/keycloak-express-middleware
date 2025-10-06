@@ -23,10 +23,6 @@
     "serve-favicon": "^2.5.0",
     "underscore": "^1.13.7"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smartenv-crs4/Keycloak-adapter-api.git"
-  },
   "keywords": [
     "keycloak",
     "token",
@@ -48,8 +44,13 @@
   ],
   "author": "aromanino (Crs4)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/smartenv-crs4/Keycloak-adapter-api/issues"
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aromanino/keycloak-express-middleware.git"
   },
-  "homepage": "https://github.com/smartenv-crs4/Keycloak-adapter-api#readme"
+  "bugs": {
+    "url": "https://github.com/aromanino/keycloak-express-middleware/issues"
+  },
+  "homepage": "https://github.com/aromanino/keycloak-express-middleware#readme"
 }
