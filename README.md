@@ -1,4 +1,4 @@
-# 🔐 Keycloak Adapter API for Node.js (Express)
+# 🔐 Keycloak Express middleware for Node.js (Express)
 An adapter API to seamlessly integrate **Node.js Express** applications with **Keycloak** for authentication and authorization using **OpenID Connect (OIDC)**.
 This middleware provides route protection, token validation, user role management. Ideal for securing RESTful services, microservices, Express-based backends, and express or javascript frontends.
 it is based on 'keycloak-connect', 'express-session'
@@ -168,8 +168,12 @@ app.get('/encodeToken', keycloackAdapter.encodeTokenRole(), (req, res) => {
 
 });
 
-// This section provides examples of how to protect resources based on permissions
-// rather than roles.
+
+// #####################################################################################
+// #   This section provides examples of how to protect resources based on permissions #
+// #   rather than roles.                                                              #                                
+// #####################################################################################
+
 
 // Example of protection with keycloackAdapter.enforcerMiddleware middleware
 // whith a static control string
@@ -269,26 +273,26 @@ It is an async function and returns a promise
 
 Parameters:
 - app: Express application instance (e.g., const app = express();)
-- keyCloakConfig: JSON object containing the Keycloak client configuration.
-     This can be obtained from the Keycloak admin console:
-     Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
-      Example:
+- keyCloakConfig: JSON object containing the Keycloak client configuration.  This can be obtained from the Keycloak admin console: Clients → [client name] → Installation → "Keycloak OIDC JSON" → Download
+  Example:   
+  ```js       
     {
-    "realm": "realm-name",
-    "auth-server-url": "https://keycloak.example.com/",
-    "ssl-required": "external",
-    "resource": "client-name",
-    "credentials": { "secret": "secret-code" },
-    "confidential-port": 0
+        "realm": "realm-name",
+        "auth-server-url": "https://keycloak.example.com/",
+        "ssl-required": "external",
+        "resource": "client-name",
+        "credentials": { "secret": "secret-code" },
+        "confidential-port": 0
     }
-- keyCloakOptions: advanced configuration options for the adapter. Main supported options:
-    - session: Express session configuration (as in express-session)
-    - scope: authentication scopes (e.g., 'openid profile email offline_access')
-      Note: to use offline_access, the client must have the option enabled and
-      the user must have the offline_access role.
-    - idpHint: to suggest an identity provider to Keycloak during login
-    - cookies: to enable cookie handling
-    - realmUrl: to override the realm URL
+  ```
+- keyCloakOptions: : [required] advanced configuration options for the adapter. Main supported options:
+  - session: Express session configuration (as in express-session)
+  - scope: authentication scopes (e.g., 'openid profile email offline_access')
+    Note: to use offline_access, the client must have the option enabled and
+    the user must have the offline_access role.
+  - idpHint: to suggest an identity provider to Keycloak during login
+  - cookies: to enable cookie handling
+  - realmUrl: to override the realm URL
 - adminClientCredentials: [Optional] Advanced configuration for setting up the realm-admin user or client,
   which will be used as the administrator to manage Keycloak via API.
   This is required in order to use the administrative functions exposed by this library.
