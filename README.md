@@ -21,13 +21,13 @@ it is based on 'keycloak-connect', 'express-session' and '@keycloak/keycloak-adm
 ## 🚀 Installation
 
 ```bash
-npm install keycloak-adapter-api
+npm install keycloak-express-middleware
 ```
 
 Or, if using Yarn:
 
 ```bash
-yarn add keycloak-adapter-api
+yarn add keycloak-express-middleware
 ```
 
 ---
